@@ -26,9 +26,9 @@ function fillForm() {
     const userDataJson = localStorage.getItem('feedback-form-state');
     const getUserData = JSON.parse(userDataJson);
 
-    if (getUserData) {  
-        refs.form.elements.email.value = getUserData.email;
-        refs.form.elements.message.value = getUserData.message;
+    if (getUserData) {
+        refs.form.elements.email.value = getUserData.email || '';
+        refs.form.elements.message.value = getUserData.message || '';
     }
 };
 
