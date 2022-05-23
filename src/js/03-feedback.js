@@ -1,41 +1,41 @@
 import throttle from 'lodash.throttle';
 
-const refs = {
-    form: document.querySelector('.feedback-form')
+const form = document.querySelector('.feedback-form');
+const userEmail = document.querySelector('input[name=email]');
+const userMessage = document.querySelector('textarea[name=message]');
+
+form.addEventListener('input', throttle(handleInput, 500));
+form.addEventListener('submit', handleSubmit);
+
+const savedData = localStorage.getItem('feedback-form-state');
+const parsedData = JSON.parse(savedData);
+
+if (parsedData) {
+  userEmail.value = parsedData.email;
+  userMessage.value = parsedData.message;
 }
 
-const userData = {};
+function handleInput() {
+  const email = userEmail.value;
+  const message = userMessage.value;
+  localStorage.setItem('feedback-form-state', JSON.stringify({ email, message }));
+}
 
-fillForm();
+function handleSubmit(event) {
+  event.preventDefault();
+  const email = event.currentTarget.elements.email.value;
+  const message = event.currentTarget.elements.message.value;
 
-refs.form.addEventListener('input', throttle(handleFillForm, 500));
-refs.form.addEventListener('submit', handleFormSubmit);
+  if (!email || !message) {
+    return alert('Fill all fields!');
+  }
 
-function handleFillForm(event) {
-    if (userData) {
-        localStorage.setItem('feedback-form-state', JSON.stringify(userData));
-    } else {
-        { };
-    };
+  const userData = {
+    email,
+    message,
+  };
+  console.log(userData);
 
-    userData[event.target.name] = event.target.value;
-    localStorage.setItem('feedback-form-state', JSON.stringify(userData));
-};
-
-function fillForm() {
-    const userDataJson = localStorage.getItem('feedback-form-state');
-    const getUserData = JSON.parse(userDataJson);
-
-    if (getUserData) {
-        refs.form.elements.email.value = getUserData.email || '';
-        refs.form.elements.message.value = getUserData.message || '';
-    }
-};
-
-function handleFormSubmit(event) {
-    event.preventDefault();
-    event.currentTarget.reset();
-
-    console.log(JSON.parse(localStorage.getItem('feedback-form-state')));
-    localStorage.removeItem('feedback-form-state');
-};
+  localStorage.removeItem('feedback-form-state');
+  form.reset();
+}
